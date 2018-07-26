@@ -24,12 +24,7 @@ io.on('connection', (socket) => {
   socket.on('new message', (data) => {
     // we tell the client to execute 'new message'
     socket.broadcast.emit('new message', {
-      //username: socket.username,
-      message: data
-    });
-
-    socket.emit('new message', {
-      //username: socket.username,
+      username: socket.username,
       message: data
     });
   });
