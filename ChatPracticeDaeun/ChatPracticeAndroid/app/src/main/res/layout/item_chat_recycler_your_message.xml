@@ -27,7 +27,7 @@
         android:text="09:36"
         android:textColor="@color/colorGrayLight"
         android:textSize="13dp"
-        app:layout_constraintBottom_toBottomOf="@id/text_chat_my_message"
-        app:layout_constraintStart_toEndOf="@id/text_chat_my_message" />
+        app:layout_constraintBottom_toBottomOf="@id/text_chat_your_message"
+        app:layout_constraintStart_toEndOf="@id/text_chat_your_message" />
 
 </android.support.constraint.ConstraintLayout>

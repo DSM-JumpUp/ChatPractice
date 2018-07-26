@@ -45,7 +45,6 @@ io.on('connection', function (socket) {
     });
     socket.on('message', function (data) {
         var room = rooms[socket.id];
-        console.log(room, data);
         socket.broadcast.to(room).emit('message', data);
     });
     socket.on('leave room', function () {

@@ -1,8 +1,11 @@
 package dasilver.jeong.chatpracticeandroid;
 
 import android.content.Intent;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 
@@ -16,9 +19,9 @@ public class ConnectActivity extends AppCompatActivity {
 
     private Button startButton;
     private Socket socket;
-    private String room, peerName;
-
-
+    private String room;
+    private ConnectDialog connectDialog;
+    private Handler mHandler;
 
 
     @Override
@@ -27,6 +30,7 @@ public class ConnectActivity extends AppCompatActivity {
         setContentView(R.layout.activity_connect);
 
         startButton = (Button) findViewById(R.id.btn_connect_start);
+        mHandler = new Handler();
         SocketApplication app = (SocketApplication) getApplication();
         socket = app.getSocket();
         socket.connect();
@@ -35,7 +39,7 @@ public class ConnectActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 socket.emit("login");
-                socket.on("chat start", chatStart);
+                connectDialog();
             }
         });
     }
@@ -49,6 +53,7 @@ public class ConnectActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     try {
+                        Log.d("Debug","chatStart");
                         room = data.getString("room");
                         Intent intent = new Intent(ConnectActivity.this, ChatActivity.class);
                         intent.putExtra("room", room);
@@ -59,6 +64,30 @@ public class ConnectActivity extends AppCompatActivity {
                 }
             });
 
+        }
+    };
+
+    private void connectDialog() {
+        connectDialog = new ConnectDialog(ConnectActivity.this, cancelClickListener);
+        connectDialog.setCancelable(true);
+        connectDialog.getWindow().setGravity(Gravity.CENTER);
+        connectDialog.show();
+        socket.on("chat start", chatStart);
+
+        Runnable mMyTask = new Runnable() {
+            @Override
+            public void run() {
+                connectDialog.dismiss();
+            }
+        };
+        mHandler.postDelayed(mMyTask, 15000);
+
+    }
+
+    private View.OnClickListener cancelClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            connectDialog.dismiss();
         }
     };
 }
