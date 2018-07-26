@@ -15,7 +15,7 @@ public class SocketApplication extends Application{
     {
         try {
             mSocket = IO.socket("http://10.0.2.2:3000/");
-           // mSocket = IO.socket("http://10.156.145.113:3000/");
+            //mSocket = IO.socket("http://10.156.145.113:3000/");
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }

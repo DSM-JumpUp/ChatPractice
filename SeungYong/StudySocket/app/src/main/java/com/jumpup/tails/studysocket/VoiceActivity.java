@@ -26,9 +26,9 @@ public class VoiceActivity extends AppCompatActivity { // 미완성
     private boolean isRecoding = false;
     private Thread mRecordThread = null;
     private int mAudioSource = MediaRecorder.AudioSource.MIC;
-    private int mSampleRate = 100000;
+    private int mSampleRate = 44800;
     private int mChannelCount = AudioFormat.CHANNEL_IN_STEREO;
-    private int mAudioFormat = AudioFormat.ENCODING_PCM_8BIT;
+    private int mAudioFormat = AudioFormat.ENCODING_PCM_16BIT;
     private int mBufferSize = AudioTrack.getMinBufferSize(mSampleRate, mChannelCount, mAudioFormat);
 
     public AudioRecord mAudioRecord = null;
@@ -45,6 +45,7 @@ public class VoiceActivity extends AppCompatActivity { // 미완성
         SocketApplication application = (SocketApplication) getApplication();
         mSocket = application.getSocket();
         mAudioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, mSampleRate, mChannelCount, mAudioFormat, mBufferSize, AudioTrack.MODE_STREAM); // AudioTrack 생성
+        mAudioTrack.play();
 
         btn = findViewById(R.id.btn_voice);
         btn.setOnClickListener(new View.OnClickListener() {
@@ -75,7 +76,7 @@ public class VoiceActivity extends AppCompatActivity { // 미완성
                     StringBuilder sb = new StringBuilder();
                     for(final byte b: readData)
                         sb.append(String.format("%02x ", b&0xff));
-                    //Log.d("Input data", sb.toString());
+                    Log.d("Input data", sb.toString());
                     mSocket.emit("send voice", readData);
                 }
             }
@@ -95,21 +96,7 @@ public class VoiceActivity extends AppCompatActivity { // 미완성
         @Override
         public void call(Object... args) {
             if (isRecoding) {
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                ObjectOutputStream oos;
-                mAudioTrack.play();
-                try {
-                    oos = new ObjectOutputStream(bos);
-                    oos.writeObject(args);
-                    oos.flush();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                byte [] data = bos.toByteArray();
-                StringBuilder sb = new StringBuilder();
-                for(final byte b: data)
-                    sb.append(String.format("%02x ", b&0xff));
-                Log.d("Output data", sb.toString());
+
                 mAudioTrack.write(readData, 0, readData.length);
             }
         }
