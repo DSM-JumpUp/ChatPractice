@@ -9,13 +9,13 @@ import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-public class ConnectDialog extends Dialog {
+public class ConnectFailDialog extends Dialog {
 
     private ImageButton cancelImageButton;
     private View.OnClickListener mCancelClickListener;
 
 
-    public ConnectDialog(@NonNull Context context, View.OnClickListener cancelClickListener) {
+    public ConnectFailDialog(@NonNull Context context, View.OnClickListener cancelClickListener) {
         super(context);
         this.mCancelClickListener = cancelClickListener;
     }
@@ -27,9 +27,9 @@ public class ConnectDialog extends Dialog {
         lpWindow.flags = WindowManager.LayoutParams.FLAG_DIM_BEHIND;
         lpWindow.dimAmount = 0.8f;
         getWindow().setAttributes(lpWindow);
-        setContentView(R.layout.dialog_connect);
+        setContentView(R.layout.dialog_connect_fail);
 
-        cancelImageButton = (ImageButton) findViewById(R.id.btn_dialog_connect_cancel);
+        cancelImageButton = (ImageButton) findViewById(R.id.btn_dialog_connect_fail_cancel);
 
 
         if (mCancelClickListener != null) {

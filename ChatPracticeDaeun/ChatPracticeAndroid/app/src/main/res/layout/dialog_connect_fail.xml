@@ -2,11 +2,11 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="300dp"
-    android:layout_height="250dp"
+    android:layout_height="150dp"
     android:layout_gravity="center">
 
     <ImageButton
-        android:id="@+id/btn_dialog_connect_cancel"
+        android:id="@+id/btn_dialog_connect_fail_cancel"
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_margin="10dp"
@@ -15,23 +15,25 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
+        android:id="@+id/text1_connect_fail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="100m이내 사람들을 찾는 중 입니다."
+        android:text="주변 사람들을 찾지 못하였습니다."
+        android:textColor="@color/colorPrimary"
+        app:layout_constraintBottom_toTopOf="@id/text2_connect_fail"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <TextView
+        android:id="@+id/text2_connect_fail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="죄송합니다."
         android:textColor="@color/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.3" />
-
-    <ProgressBar
-        android:id="@+id/progress_dialog_connect"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.6" />
+        app:layout_constraintTop_toBottomOf="@id/text1_connect_fail" />
 </android.support.constraint.ConstraintLayout>

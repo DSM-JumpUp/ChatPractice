@@ -18,6 +18,10 @@ var findPeerForLoneSocket = function(socket) {
     if (queue.length > 0) {
         // somebody is in queue, pair them!
         var peer = queue.pop();
+        if(peer == socket) {
+            queue.push(peer);
+            findPeerForLoneSocket(socket);
+        }
         var room = socket.id + '#' + peer.id;
         console.log(room);
         // join them both

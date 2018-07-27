@@ -123,7 +123,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private String setNickName() {
-        String[] nickNameList = {"익명의 너구리", "익명의 황조새", "익명의 손승용", "익명의 아스파라거스", "익명의 바퀴벌레", "익명의 파파야", "익명의 수달", "익명의 친칠라"};
+        String[] nickNameList = {"익명의 너구리", "익명의 황조새", "익명의 손승용", "익명의 아스파라거스", "익명의 바퀴벌레", "익명의 파파야", "익명의 땅다람쥐", "익명의 친칠라"};
         Random r = new Random();
         String nickName = nickNameList[r.nextInt(nickNameList.length)];
         return nickName;
