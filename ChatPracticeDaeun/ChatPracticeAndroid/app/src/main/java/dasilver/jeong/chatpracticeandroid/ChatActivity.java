@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -32,7 +33,7 @@ public class ChatActivity extends AppCompatActivity {
     private long now;
     private Date nowDate;
     private SimpleDateFormat timeDateFormat;
-    private String timeText;
+    private String timeText, nickName;
     private ImageButton sendMessageButton, plusButton, cancelButton, leaveButton;
     private EditText messageEditText;
     private TextView nickNameText;
@@ -78,6 +79,7 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
+                    Log.d("Debug","message");
                     data.put("message", messageEditText.getText().toString());
                     socket.emit("message", data);
                     chatRecyclerItems.add(new ChatRecyclerItem(0, messageEditText.getText().toString(), getTimeText()));
@@ -112,6 +114,7 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 socket.emit("leave room");
+                Log.d("Debug","leave Button clicked");
                 Intent intent = new Intent(ChatActivity.this, ConnectActivity.class);
                 startActivity(intent);
             }
@@ -150,7 +153,10 @@ public class ChatActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    
+                    Log.d("Debug", "chatEnd");
+                    chatRecyclerItems.add(new ChatRecyclerItem(2, nickName));
+                    chatRecyclerAdapter.notifyDataSetChanged();
+                    chatRecycler.smoothScrollToPosition(chatRecyclerItems.size() - 1);
                 }
             });
         }
@@ -168,7 +174,7 @@ public class ChatActivity extends AppCompatActivity {
     private String setNickName() {
         String[] nickNameList = {"익명의 너구리", "익명의 황조새", "익명의 손승용", "익명의 아스파라거스", "익명의 바퀴벌레", "익명의 파파야", "익명의 땅다람쥐", "익명의 친칠라"};
         Random r = new Random();
-        String nickName = nickNameList[r.nextInt(nickNameList.length)];
+        nickName = nickNameList[r.nextInt(nickNameList.length)];
         return nickName;
     }
 

@@ -23,9 +23,8 @@ public class ConnectActivity extends AppCompatActivity {
     private String room;
     private ConnectDialog connectDialog;
     private ConnectFailDialog connectFailDialog;
-    private ConnectAgainDialog connectAgainDialog;
+    private ConnectAgainDialog connectAgain100Dialog, connectAgain200Dialog;
     private Handler mHandler;
-    private ProgressBar connectAgainProgressBar;
 
 
     @Override
@@ -35,7 +34,6 @@ public class ConnectActivity extends AppCompatActivity {
 
         startButton = (Button) findViewById(R.id.btn_connect_start);
         mHandler = new Handler();
-        connectAgainProgressBar = (ProgressBar)findViewById(R.id.progress_connect_again);
 
                 SocketApplication app = (SocketApplication) getApplication();
         socket = app.getSocket();
@@ -102,16 +100,16 @@ public class ConnectActivity extends AppCompatActivity {
 
 
     private void connectAgain100Dialog() {
-        connectAgainDialog = new ConnectAgainDialog(ConnectActivity.this, "100", "200", againCancelClickListener);
-        connectAgainDialog.setCancelable(true);
-        connectAgainDialog.getWindow().setGravity(Gravity.CENTER);
-        connectAgainDialog.show();
+        connectAgain100Dialog = new ConnectAgainDialog(ConnectActivity.this, "100", "200", againCancelClickListener);
+        connectAgain100Dialog.setCancelable(true);
+        connectAgain100Dialog.getWindow().setGravity(Gravity.CENTER);
+        connectAgain100Dialog.show();
 
         Runnable mMyTask = new Runnable() {
             @Override
             public void run() {
                 socket.emit("pop queue");
-                connectAgainDialog.dismiss();
+                connectAgain100Dialog.dismiss();
                 connectAgain200Dialog();
             }
         };
@@ -122,25 +120,33 @@ public class ConnectActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             socket.emit("pop queue");
-            connectAgainDialog.dismiss();
+            connectAgain100Dialog.dismiss();
         }
     };
     private void connectAgain200Dialog() {
-        connectAgainDialog = new ConnectAgainDialog(ConnectActivity.this, "200", "400", againCancelClickListener);
-        connectAgainDialog.setCancelable(true);
-        connectAgainDialog.getWindow().setGravity(Gravity.CENTER);
-        connectAgainDialog.show();
+        connectAgain200Dialog = new ConnectAgainDialog(ConnectActivity.this, "200", "400", againCancel200ClickListener);
+        connectAgain200Dialog.setCancelable(true);
+        connectAgain200Dialog.getWindow().setGravity(Gravity.CENTER);
+        connectAgain200Dialog.show();
 
         Runnable mMyTask = new Runnable() {
             @Override
             public void run() {
                 socket.emit("pop queue");
-                connectAgainDialog.dismiss();
+                connectAgain200Dialog.dismiss();
                 connectFailDialog();
             }
         };
         mHandler.postDelayed(mMyTask, 5000);//test 추후에 10000으로 바꿀 예정
     }
+
+    private View.OnClickListener againCancel200ClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            socket.emit("pop queue");
+            connectAgain200Dialog.dismiss();
+        }
+    };
 
     private void connectFailDialog() {
         connectFailDialog = new ConnectFailDialog(ConnectActivity.this, failCancelClickListener);

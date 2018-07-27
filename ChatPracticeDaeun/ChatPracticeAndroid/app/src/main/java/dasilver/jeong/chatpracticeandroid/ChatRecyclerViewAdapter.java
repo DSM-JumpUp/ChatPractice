@@ -12,6 +12,7 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
 
     public static final int VIEW_TYPE_MY_MESSAGE = 0;
     public static final int VIEW_TYPE_YOUR_MESSAGE = 1;
+    public static final int VIEW_TYPE_LEAVE_MESSAGE = 2;
 
     private ArrayList<ChatRecyclerItem> chatRecyclerItems;
 
@@ -24,8 +25,10 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
     public int getItemViewType(int position) {
         if (chatRecyclerItems.get(position).getItemViewType() == 0) {
             return VIEW_TYPE_MY_MESSAGE;
-        } else {
+        } else if(chatRecyclerItems.get(position).getItemViewType() == 1){
             return VIEW_TYPE_YOUR_MESSAGE;
+        } else {
+            return VIEW_TYPE_LEAVE_MESSAGE;
         }
     }
 
@@ -37,9 +40,12 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
         if (viewType == VIEW_TYPE_MY_MESSAGE) {
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chat_recycler_my_message, parent, false);
             return new ChatRecyclerMyMessageViewHolder(v);
-        } else {
+        } else if (viewType == VIEW_TYPE_YOUR_MESSAGE) {
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chat_recycler_your_message, parent, false);
             return new ChatRecyclerYourMessageViewHolder(v);
+        } else {
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chat_recycler_leave_message, parent, false);
+            return new ChatRecyclerLeaveMessageViewHolder(v);
         }
     }
 
@@ -50,9 +56,11 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
         if (holder instanceof ChatRecyclerMyMessageViewHolder) {
             ((ChatRecyclerMyMessageViewHolder) holder).chatMessageText.setText(chatRecyclerItems.get(position).messageText);
             ((ChatRecyclerMyMessageViewHolder) holder).chatTimeText.setText(chatRecyclerItems.get(position).timeText);
-        } else {
+        } else if(holder instanceof ChatRecyclerYourMessageViewHolder){
             ((ChatRecyclerYourMessageViewHolder) holder).chatMessageText.setText(chatRecyclerItems.get(position).messageText);
             ((ChatRecyclerYourMessageViewHolder) holder).chatTimeText.setText(chatRecyclerItems.get(position).timeText);
+        } else {
+            ((ChatRecyclerLeaveMessageViewHolder) holder).leaveMessageText.setText(chatRecyclerItems.get(position).leaveMessageText);
         }
     }
 

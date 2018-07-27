@@ -1,7 +1,7 @@
 package dasilver.jeong.chatpracticeandroid;
 
 public class ChatRecyclerItem {
-    String messageText, timeText;
+    String messageText, timeText, leaveMessageText;
     private int itemViewType;
 
     public String getMessageText() {
@@ -12,6 +12,9 @@ public class ChatRecyclerItem {
         return timeText;
     }
 
+    public String getLeaveMessageText() {
+        return leaveMessageText;
+    }
 
     public int getItemViewType() {
         return itemViewType;
@@ -21,6 +24,10 @@ public class ChatRecyclerItem {
         this.itemViewType = itemViewType;
         this.messageText = messageText;
         this.timeText = timeText;
+    }
+    ChatRecyclerItem(int itemViewType, String leaveMessageText) {
+        this.itemViewType = itemViewType;
+        this.leaveMessageText = leaveMessageText;
     }
 
 }

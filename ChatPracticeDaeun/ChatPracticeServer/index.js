@@ -55,10 +55,12 @@ io.on('connection', function (socket) {
     });
     socket.on('message', function (data) {
         var room = rooms[socket.id];
+        console.log(data);
         socket.broadcast.to(room).emit('message', data);
     });
     socket.on('leave room', function () {
         var room = rooms[socket.id];
+        console.log('leave room');
         socket.broadcast.to(room).emit('chat end');
         // var peerID = room.split('#');
         // peerID = peerID[0] === socket.id ? peerID[1] : peerID[0];
