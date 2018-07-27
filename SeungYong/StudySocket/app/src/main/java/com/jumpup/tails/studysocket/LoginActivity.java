@@ -1,6 +1,5 @@
 package com.jumpup.tails.studysocket;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -44,8 +43,7 @@ public class LoginActivity extends AppCompatActivity {
                 tryLogin();
             }
         });
-        //mSocket.on("login", onLogin);
-        mSocket.on("chat start", onChatStart);
+        mSocket.on("login", onLogin);
     }
 
     private void tryLogin(){
@@ -69,11 +67,10 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //mSocket.off("login", onLogin);
-        mSocket.off("chat start", onChatStart);
+        mSocket.off("login", onLogin);
     }
 
-/*    private Emitter.Listener onLogin = new Emitter.Listener() {
+    private Emitter.Listener onLogin = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
             JSONObject data = (JSONObject) args[0];
@@ -91,31 +88,6 @@ public class LoginActivity extends AppCompatActivity {
             });
             Intent sendIntent = new Intent(getApplicationContext(), MainActivity.class);
             sendIntent.putExtra("userName", mUsername);
-            setResult(LOGIN_SUCCESS, sendIntent);
-            finish();
-        }
-    };*/
-
-    private Emitter.Listener onChatStart = new Emitter.Listener() {
-        @Override
-        public void call(Object... args) {
-            JSONObject data = (JSONObject) args[0];
-            final String mRoom;
-            try {
-                mRoom = data.getString("room");
-            } catch (JSONException e) {
-                return;
-            }
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    dialogFragment.dismiss();
-                    Toast.makeText(getApplication(),"로그인 성공!  방 : " + mRoom + " 유저이름 : " + mUsername, Toast.LENGTH_SHORT).show();
-                }
-            });
-            Intent sendIntent = new Intent(getApplicationContext(), MainActivity.class);
-            sendIntent.putExtra("userName", mUsername);
-            sendIntent.putExtra("room", mRoom);
             setResult(LOGIN_SUCCESS, sendIntent);
             finish();
         }

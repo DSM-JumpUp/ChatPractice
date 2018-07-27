@@ -8,10 +8,12 @@ import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.jumpup.tails.studysocket.adapter.ChatLog;
 import com.jumpup.tails.studysocket.model.Message;
@@ -29,54 +31,61 @@ import static com.jumpup.tails.studysocket.socket.SocketApplication.LOGIN_SUCCES
 import static com.jumpup.tails.studysocket.socket.SocketApplication.LOGIN_TRY;
 
 public class MainActivity extends AppCompatActivity {
-    private String mUserName;
     private Socket mSocket;
 
-    private String mMessage;
     private boolean misSending = false;
 
     private ArrayList<Message> mMessages;
     private ChatLog mChatLog;
     private RecyclerView mRecyclerView;
-    private LinearLayoutManager mLayoutManager;
 
     private AppCompatEditText mTypeText;
-    private Button mSendBtn;
+
+    private TextView mUserNameTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mUserNameTextView = findViewById(R.id.user_name);
+
         mMessages = new ArrayList<>();
         mRecyclerView = findViewById(R.id.recycler_chat);
 
         mTypeText = findViewById(R.id.type_chat_edit_text);
-        mSendBtn = findViewById(R.id.send_btn);
+        Button mSendBtn = findViewById(R.id.send_btn);
         mSendBtn.setOnClickListener(sendChat);
 
         mSocket = SocketApplication.getSocket();
         mSocket.connect();
         mSocket.on("message", NewMessage);
-        startLogin();
+        //startLogin();
+        startConnect();
     }
 
-    void startLogin(){
+/*    void startLogin(){
         Intent i = new Intent(MainActivity.this, LoginActivity.class);
         startActivityForResult(i,LOGIN_TRY);
+    }*/
+
+    void startConnect(){
+        Intent i = new Intent(MainActivity.this, ConnectActivity.class);
+        startActivityForResult(i, LOGIN_TRY);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         if(requestCode == LOGIN_TRY){
             if (resultCode == LOGIN_SUCCESS){
-                mUserName = data.getStringExtra("userName");
+                String mUserName = data.getStringExtra("userName");
                 Log.d("Intent", mUserName);
+                mUserNameTextView.setText(mUserName);
 
                 mChatLog = new ChatLog(mMessages);
                 mRecyclerView.setHasFixedSize(true);
                 mRecyclerView.setAdapter(mChatLog);
-                mLayoutManager = new LinearLayoutManager(this);
+                LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
                 mRecyclerView.setLayoutManager(mLayoutManager);
                 mRecyclerView.setItemAnimator(new DefaultItemAnimator());
             }else{
@@ -92,13 +101,12 @@ public class MainActivity extends AppCompatActivity {
 
             String chatData = mTypeText.getText().toString().trim();
             if (TextUtils.isEmpty(chatData)) {
-                mTypeText.setError("대화 내용을 입력해주세요!!");
-                mTypeText.requestFocus();
+/*                mTypeText.setError("대화 내용을 입력해주세요!!");
+                mTypeText.requestFocus();*/
                 return;
             }else {
                 mTypeText.getText().clear();
             }
-            mMessage = chatData;
             misSending  = true;
             mSocket.emit("message", chatData);
         }
@@ -131,9 +139,7 @@ public class MainActivity extends AppCompatActivity {
     void scrollBottom(){
         runOnUiThread(new Runnable() {
             @Override
-            public void run() {
-                mRecyclerView.scrollToPosition(mChatLog.getItemCount() - 1);
-            }
+            public void run() { mRecyclerView.scrollToPosition(mChatLog.getItemCount() - 1); }
         });
     }
 
