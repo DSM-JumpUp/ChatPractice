@@ -33,7 +33,7 @@ public class ChatActivity extends AppCompatActivity {
     private Date nowDate;
     private SimpleDateFormat timeDateFormat;
     private String timeText;
-    private ImageButton sendMessageButton, plusButton, cancelButton;
+    private ImageButton sendMessageButton, plusButton, cancelButton, leaveButton;
     private EditText messageEditText;
     private TextView nickNameText;
     private JSONObject data;
@@ -54,6 +54,7 @@ public class ChatActivity extends AppCompatActivity {
         plusButton = (ImageButton)findViewById(R.id.btn_chat_plus);
         cancelButton = (ImageButton)findViewById(R.id.btn_chat_cancel);
         bottomBtnLayout = (ConstraintLayout)findViewById(R.id.layout_bottom_btn);
+        leaveButton = (ImageButton)findViewById(R.id.btn_chat_leave);
         data = new JSONObject();
         chatRecycler = (RecyclerView) findViewById(R.id.recycler_chat);
         chatLayoutManager = new LinearLayoutManager(this);
@@ -71,6 +72,7 @@ public class ChatActivity extends AppCompatActivity {
         socket = app.getSocket();
 
         socket.on("message", receiveMassage);
+        socket.on("chat end", chatEnd);
 
         sendMessageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,6 +108,15 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
+        leaveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                socket.emit("leave room");
+                Intent intent = new Intent(ChatActivity.this, ConnectActivity.class);
+                startActivity(intent);
+            }
+        });
+
     }
 
 
@@ -128,6 +139,18 @@ public class ChatActivity extends AppCompatActivity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+                }
+            });
+        }
+    };
+
+    private Emitter.Listener chatEnd = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    
                 }
             });
         }

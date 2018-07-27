@@ -60,18 +60,19 @@ io.on('connection', function (socket) {
     socket.on('leave room', function () {
         var room = rooms[socket.id];
         socket.broadcast.to(room).emit('chat end');
-        var peerID = room.split('#');
-        peerID = peerID[0] === socket.id ? peerID[1] : peerID[0];
-        // add both current and peer to the queue
-        findPeerForLoneSocket(allUsers[peerID]);
-        findPeerForLoneSocket(socket);
+        // var peerID = room.split('#');
+        // peerID = peerID[0] === socket.id ? peerID[1] : peerID[0];
+        // // add both current and peer to the queue
+        // findPeerForLoneSocket(allUsers[peerID]);
+        // findPeerForLoneSocket(socket);
     });
     socket.on('disconnect', function () {
         var room = rooms[socket.id];
         socket.broadcast.to(room).emit('chat end');
-        var peerID = room.split('#');
-        peerID = peerID[0] === socket.id ? peerID[1] : peerID[0];
-        // current socket left, add the other one to the queue
-        findPeerForLoneSocket(allUsers[peerID]);
+        // var peerID = room.split('#');
+        // peerID = peerID[0] === socket.id ? peerID[1] : peerID[0];
+        // // current socket left, add the other one to the queue
+        // findPeerForLoneSocket(allUsers[peerID]);
+        queue.splice(queue.indexOf(socket), 1);
     });
 });
