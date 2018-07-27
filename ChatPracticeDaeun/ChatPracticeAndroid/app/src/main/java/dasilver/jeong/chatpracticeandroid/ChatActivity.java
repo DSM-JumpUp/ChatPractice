@@ -1,25 +1,22 @@
 package dasilver.jeong.chatpracticeandroid;
 
 import android.content.Intent;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
-
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
@@ -36,10 +33,11 @@ public class ChatActivity extends AppCompatActivity {
     private Date nowDate;
     private SimpleDateFormat timeDateFormat;
     private String timeText;
-    private Button sendMessageButton;
+    private ImageButton sendMessageButton, plusButton, cancelButton;
     private EditText messageEditText;
     private TextView nickNameText;
     private JSONObject data;
+    private ConstraintLayout bottomBtnLayout;
 
 
     @Override
@@ -50,9 +48,12 @@ public class ChatActivity extends AppCompatActivity {
         String room = intent.getExtras().getString("room");
 //        Toast.makeText(getApplicationContext(),room,Toast.LENGTH_SHORT).show();
 
-        sendMessageButton = (Button) findViewById(R.id.btn_chat_send_message);
+        sendMessageButton = (ImageButton) findViewById(R.id.btn_chat_send_message);
         messageEditText = (EditText) findViewById(R.id.edit_chat_message);
         nickNameText = (TextView) findViewById(R.id.text_chat_nickname);
+        plusButton = (ImageButton)findViewById(R.id.btn_chat_plus);
+        cancelButton = (ImageButton)findViewById(R.id.btn_chat_cancel);
+        bottomBtnLayout = (ConstraintLayout)findViewById(R.id.layout_bottom_btn);
         data = new JSONObject();
         chatRecycler = (RecyclerView) findViewById(R.id.recycler_chat);
         chatLayoutManager = new LinearLayoutManager(this);
@@ -86,6 +87,25 @@ public class ChatActivity extends AppCompatActivity {
                 }
             }
         });
+
+        plusButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bottomBtnLayout.setVisibility(View.VISIBLE);
+                plusButton.setVisibility(View.GONE);
+                cancelButton.setVisibility(View.VISIBLE);
+            }
+        });
+
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bottomBtnLayout.setVisibility(View.GONE);
+                plusButton.setVisibility(View.VISIBLE);
+                cancelButton.setVisibility(View.GONE);
+            }
+        });
+
     }
 
 
