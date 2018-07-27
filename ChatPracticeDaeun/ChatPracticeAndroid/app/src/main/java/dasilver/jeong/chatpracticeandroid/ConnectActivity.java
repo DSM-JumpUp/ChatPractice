@@ -39,6 +39,7 @@ public class ConnectActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 socket.emit("login");
+                socket.on("chat start", chatStart);
                 connectDialog();
             }
         });
@@ -47,13 +48,12 @@ public class ConnectActivity extends AppCompatActivity {
     private Emitter.Listener chatStart = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
+            Log.d("Debug","chatStart");
             runOnUiThread(new Runnable() {
                 JSONObject data = (JSONObject) args[0];
-
                 @Override
                 public void run() {
                     try {
-                        Log.d("Debug","chatStart");
                         room = data.getString("room");
                         Intent intent = new Intent(ConnectActivity.this, ChatActivity.class);
                         intent.putExtra("room", room);
@@ -72,22 +72,14 @@ public class ConnectActivity extends AppCompatActivity {
         connectDialog.setCancelable(true);
         connectDialog.getWindow().setGravity(Gravity.CENTER);
         connectDialog.show();
-        socket.on("chat start", chatStart);
-
-        Runnable mMyTask = new Runnable() {
-            @Override
-            public void run() {
-                connectDialog.dismiss();
-            }
-        };
-        mHandler.postDelayed(mMyTask, 15000);
-
     }
 
     private View.OnClickListener cancelClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            socket.emit("pop queue");
             connectDialog.dismiss();
         }
     };
+
 }

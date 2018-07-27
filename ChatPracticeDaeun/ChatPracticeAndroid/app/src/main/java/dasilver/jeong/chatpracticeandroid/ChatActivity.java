@@ -103,6 +103,7 @@ public class ChatActivity extends AppCompatActivity {
                         yourMessage = data.getString("message");
                         chatRecyclerItems.add(new ChatRecyclerItem(1, yourMessage, getTimeText()));
                         chatRecyclerAdapter.notifyDataSetChanged();
+                        chatRecycler.smoothScrollToPosition(chatRecyclerItems.size() - 1);
 
                     } catch (JSONException e) {
                         e.printStackTrace();

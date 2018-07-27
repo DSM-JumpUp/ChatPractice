@@ -14,7 +14,7 @@ var allUsers = {}; // map socket.id => socket
 var findPeerForLoneSocket = function(socket) {
     // this is place for possibly some extensive logic
     // which can involve preventing two people pairing multiple times
-    console.log(queue.length);
+    console.log(queue);
     if (queue.length > 0) {
         // somebody is in queue, pair them!
         var peer = queue.pop();
@@ -40,8 +40,14 @@ io.on('connection', function (socket) {
     console.log('User '+socket.id + ' connected');
     socket.on('login', function () {
         allUsers[socket.id] = socket;
+        socket.emit('')
         // now check if sb is in queue
         findPeerForLoneSocket(socket);
+    });
+    socket.on('pop queue', function() {
+        console.log(queue);
+        queue.splice(queue.indexOf(socket), 1);
+        console.log(queue);
     });
     socket.on('message', function (data) {
         var room = rooms[socket.id];
