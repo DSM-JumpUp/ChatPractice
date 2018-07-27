@@ -55,14 +55,9 @@ public class MainActivity extends AppCompatActivity {
         mSendBtn = findViewById(R.id.send_btn);
         mSendBtn.setOnClickListener(sendChat);
 
-        SocketApplication socketApplication = (SocketApplication) getApplication();
-        mSocket = socketApplication.getSocket();
+        mSocket = SocketApplication.getSocket();
         mSocket.connect();
-        //mSocket.on("user joined", userJoined);
-        //mSocket.on("typing", Typing);
-        //mSocket.on("stop typing", StopTyping);
-        //mSocket.on("user left", UserLeft);
-        mSocket.on("new message", NewMessage);
+        mSocket.on("message", NewMessage);
         startLogin();
     }
 
@@ -105,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
             }
             mMessage = chatData;
             misSending  = true;
-            mSocket.emit("new message", chatData);
+            mSocket.emit("message", chatData);
         }
     };
 
@@ -142,31 +137,11 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-/*    private Emitter.Listener userJoined = new Emitter.Listener() {
-        @Override
-        public void call(Object... args) {
-
-        }
-    };
-
-    private Emitter.Listener Typing = new Emitter.Listener() {
-        @Override
-        public void call(Object... args) {
-
-        }
-    };
-
-    private Emitter.Listener StopTyping = new Emitter.Listener() {
-        @Override
-        public void call(Object... args) {
-
-        }
-    };
-
-    private Emitter.Listener UserLeft = new Emitter.Listener() {
-        @Override
-        public void call(Object... args) {
-
-        }
-    };*/
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //mSocket.off("login", onLogin);
+        mSocket.off("message", NewMessage);
+        mSocket.disconnect();
+    }
 }
