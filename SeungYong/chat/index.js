@@ -13,8 +13,6 @@ server.listen(port, () => {
 // Routing
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Chatroom
-
 var numUsers = 0;
 
 io.on('connection', (socket) => {
@@ -49,20 +47,6 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('user joined', {
       username: socket.username,
       numUsers: numUsers
-    });
-  });
-
-  // when the client emits 'typing', we broadcast it to others
-  socket.on('typing', () => {
-    socket.broadcast.emit('typing', {
-      username: socket.username
-    });
-  });
-
-  // when the client emits 'stop typing', we broadcast it to others
-  socket.on('stop typing', () => {
-    socket.broadcast.emit('stop typing', {
-      username: socket.username
     });
   });
 

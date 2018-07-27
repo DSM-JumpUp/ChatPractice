@@ -11,7 +11,7 @@ public class SocketApplication extends Application{
     public static final int LOGIN_TRY = 0;
     public static final int LOGIN_SUCCESS = 1;
 
-    private Socket mSocket;
+    private static Socket mSocket;
     {
         try {
             mSocket = IO.socket("http://10.0.2.2:3000/");
@@ -21,7 +21,7 @@ public class SocketApplication extends Application{
         }
     }
 
-    public Socket getSocket() {
+    public static Socket getSocket() {
         return mSocket;
     }
 }
