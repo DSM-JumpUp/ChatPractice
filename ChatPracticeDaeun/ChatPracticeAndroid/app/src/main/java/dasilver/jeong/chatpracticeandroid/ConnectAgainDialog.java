@@ -16,15 +16,16 @@ public class ConnectAgainDialog extends Dialog {
     private Button connectAgainButton;
     private ImageButton connectAgainCancelButton;
     private TextView cannotConnectTextView, findAgainTextView;
-    private View.OnClickListener mAgainCancelClickListener;
+    private View.OnClickListener mAgainCancelClickListener, mConnectAgainClickListener;
     private String cannotConnectText, findAgaintext;
-    private ProgressBar connectAgainProgressBar;
+    public static ProgressBar connectAgainProgressBar;
 
-    public ConnectAgainDialog(@NonNull Context context, String cannotConnectText, String findAgaintext, View.OnClickListener againCancelClickListener) {
+    public ConnectAgainDialog(@NonNull Context context, String cannotConnectText, String findAgaintext, View.OnClickListener againCancelClickListener, View.OnClickListener connectAgainClickListener) {
         super(context);
         this.cannotConnectText = cannotConnectText;
         this.findAgaintext = findAgaintext;
         this.mAgainCancelClickListener = againCancelClickListener;
+        this.mConnectAgainClickListener = connectAgainClickListener;
     }
 
     @Override
@@ -46,18 +47,22 @@ public class ConnectAgainDialog extends Dialog {
         cannotConnectTextView.setText(cannotConnectText+"m이내 사람들을 찾지 못하였습니다.");
         findAgainTextView.setText(findAgaintext+"m이내로 다시 탐색하겠습니까?");
 
-        if (mAgainCancelClickListener != null) {
+
+        if (mAgainCancelClickListener != null && mConnectAgainClickListener != null) {
+            connectAgainCancelButton.setOnClickListener(mAgainCancelClickListener);
+            connectAgainButton.setOnClickListener(mConnectAgainClickListener);
+        } else if (mAgainCancelClickListener != null
+                && mConnectAgainClickListener == null) {
             connectAgainCancelButton.setOnClickListener(mAgainCancelClickListener);
         } else {
 
         }
 
-        connectAgainButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                connectAgainProgressBar.setVisibility(View.VISIBLE);
-            }
-        });
-
+//        connectAgainButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                connectAgainProgressBar.setVisibility(View.VISIBLE);
+//            }
+//        });
     }
 }
