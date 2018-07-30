@@ -64,6 +64,6 @@ io.on('connection', function (socket) {
         var peerID = room.split('#');
         peerID = peerID[0] === socket.id ? peerID[1] : peerID[0];
         // current socket left, add the other one to the queue
-        findPeerForLoneSocket(allUsers[peerID]);
+        //findPeerForLoneSocket(allUsers[peerID]);
     });
 });
