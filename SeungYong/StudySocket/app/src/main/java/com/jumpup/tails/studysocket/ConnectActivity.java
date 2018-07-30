@@ -34,15 +34,13 @@ public class ConnectActivity extends AppCompatActivity {
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                tryMatching();
-            }
+            public void onClick(View view) { tryMatching(); }
         });
         mSocket.on("chat start", onChatStart);
     }
 
 
-    private String getmUsername(){
+    private String getUsername(){
         Resources res = getResources();
         String[] names = res.getStringArray(R.array.names_array);
         Random rnd = new Random();
@@ -56,6 +54,7 @@ public class ConnectActivity extends AppCompatActivity {
 
         FragmentManager fm = getSupportFragmentManager();
         dialogFragment = new LoginWaitDialog();
+        dialogFragment.setCancelable(false);
         dialogFragment.show(fm, "wait_fragment_dialog");
     }
 
@@ -73,7 +72,7 @@ public class ConnectActivity extends AppCompatActivity {
                 public void run() { dialogFragment.dismiss(); }
             });
             Intent sendIntent = new Intent(getApplicationContext(), MainActivity.class);
-            sendIntent.putExtra("userName", getmUsername());
+            sendIntent.putExtra("userName", getUsername());
             setResult(LOGIN_SUCCESS, sendIntent);
             finish();
         }

@@ -3,6 +3,7 @@ package com.jumpup.tails.studysocket;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private Socket mSocket;
 
     private boolean misSending = false;
+    private boolean misPlus = false;
 
     private ArrayList<Message> mMessages;
     private ChatLog mChatLog;
@@ -42,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
     private AppCompatEditText mTypeText;
 
     private TextView mUserNameTextView;
+
+    private View chooseMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +60,11 @@ public class MainActivity extends AppCompatActivity {
         mTypeText = findViewById(R.id.type_chat_edit_text);
         Button mSendBtn = findViewById(R.id.send_btn);
         mSendBtn.setOnClickListener(sendChat);
+
+        Button mPlusBtn = findViewById(R.id.send_plus);
+        mPlusBtn.setOnClickListener(sendPlus);
+
+        chooseMode = findViewById(R.id.choose_mode);
 
         mSocket = SocketApplication.getSocket();
         mSocket.connect();
@@ -101,8 +110,6 @@ public class MainActivity extends AppCompatActivity {
 
             String chatData = mTypeText.getText().toString().trim();
             if (TextUtils.isEmpty(chatData)) {
-/*                mTypeText.setError("대화 내용을 입력해주세요!!");
-                mTypeText.requestFocus();*/
                 return;
             }else {
                 mTypeText.getText().clear();
@@ -112,24 +119,34 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    private View.OnClickListener sendPlus = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if(!misPlus){
+                misPlus = true;
+                chooseMode.setVisibility(View.VISIBLE);
+            }else {
+                misPlus = false;
+                chooseMode.setVisibility(View.GONE);
+            }
+
+        }
+    };
 
     private Emitter.Listener NewMessage = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
             JSONObject data = (JSONObject) args[0];
             final String chatData;
-            try {
-                chatData = data.getString("message");
-            } catch (JSONException e) {
-                return;
-            }
-            Log.d("NEW MESSAGE", chatData);
+
+            try { chatData = data.getString("message");
+            } catch (JSONException e) { return; }
+
             if(misSending){
                 mMessages.add(new Message.Builder().Build(Message.TYPE_MESSAGE, chatData));
                 misSending = false;
             }else{
                 mMessages.add(new Message.Builder().Build(Message.TYPE_LOG, chatData));
-                Log.d("LOGGG", "YEASDF");
             }
             mChatLog.notifyItemInserted(mMessages.size() - 1);
             scrollBottom();
