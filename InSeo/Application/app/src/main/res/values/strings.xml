@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">안드로이드</string>
+    <string name="title_activity_main2">메인</string>
+    <string name="peerExitRoom">상대방이 대화방을 떠났습니다.</string>
+</resources>

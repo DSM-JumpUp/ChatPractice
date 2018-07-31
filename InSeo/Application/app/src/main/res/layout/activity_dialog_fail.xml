@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="300dp"
+    android:layout_height="200dp"
+    android:layout_gravity="center">
+
+    <ImageButton
+        android:id="@+id/dialog_con_imgBtn"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_marginEnd="13dp"
+        android:layout_marginTop="13dp"
+        android:background="@drawable/cancel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/dialog_con_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:text="찾기에 실패했어요. ㅠ_ㅠ"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.3" />
+
+    <Button
+        android:id="@+id/dialog_con_Btn"
+        android:text="확인"
+        android:textColor="#ffffff"
+        android:textSize="17sp"
+        android:layout_width="200dp"
+        android:layout_height="40dp"
+        android:background="@drawable/round_button"
+        app:layout_constraintTop_toBottomOf="@id/dialog_con_text"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+</android.support.constraint.ConstraintLayout>
