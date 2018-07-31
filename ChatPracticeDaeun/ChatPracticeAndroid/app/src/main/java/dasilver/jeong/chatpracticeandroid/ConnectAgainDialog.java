@@ -58,11 +58,5 @@ public class ConnectAgainDialog extends Dialog {
 
         }
 
-//        connectAgainButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                connectAgainProgressBar.setVisibility(View.VISIBLE);
-//            }
-//        });
     }
 }
