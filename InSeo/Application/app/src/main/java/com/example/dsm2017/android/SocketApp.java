@@ -16,10 +16,10 @@ public class SocketApp extends Application {
 
 
         try {
-            mSocket = IO.socket("http://10.0.2.2:8080/");
+            mSocket = IO.socket("https://amuguna.herokuapp.com/");
         } catch (URISyntaxException e) {
             e.printStackTrace();
-        }
+        };
     }
     public Socket getSocket() {
         return mSocket;

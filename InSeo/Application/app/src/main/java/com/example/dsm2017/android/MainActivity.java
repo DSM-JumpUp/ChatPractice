@@ -1,6 +1,7 @@
 package com.example.dsm2017.android;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -28,7 +29,6 @@ import com.github.nkzawa.socketio.client.Socket;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -42,22 +42,22 @@ public class MainActivity extends AppCompatActivity {
     private boolean isGPSEnabled;
     private boolean isNetworkEnabled;
     private double lat, lng;
-    private int length;
+    private int length;    private final int PERMISSIONS_ACCESS_FINE_LOCATION = 1000;
+    private final int PERMISSIONS_ACCESS_COARSE_LOCATION = 1001;
+    private boolean isAccessFineLocation = false;
+    private boolean isAccessCoarseLocation = false;
+    private boolean isPermission = false;
+
+    private GPSActivity gps;
+
+
 
     Button button;
 
     @Override
     protected void onRestart() {
         super.onRestart();
-        if (getApplicationContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS)) {
-            if (hasPermissions()) {
-//                Toast.makeText(getApplicationContext(), "이미 허용함.", Toast.LENGTH_LONG).show();
-            } else {
-                requestPerms();
-            }
-        } else {
-//            Toast.makeText(getApplicationContext(), "이용할 수 없음.", Toast.LENGTH_LONG).show();
-        }
+//        GPSPermission();
     }
 
     @Override
@@ -65,60 +65,19 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        gps = new GPSActivity(MainActivity.this);
+
+        if(gps.isGetLocation()) {
+            gps.getLocation();
+            lat = gps.getLat();
+            lng = gps.getLng();
+        } else {
+            gps.showSettingsAlert();
+        }
+
         mHandler = new Handler();
 
-        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-
-        isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
-
-        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            //GPS 설정화면으로 이동
-            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-            intent.addCategory(Intent.CATEGORY_DEFAULT);
-            startActivity(intent);
-        }
-
-
-        LocationListener locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                lat = location.getLatitude();
-                lng = location.getLongitude();
-
-                Log.d("Debug", "latitude: " + lat + ", longitude: " + lng);
-            }
-
-            @Override
-            public void onStatusChanged(String s, int i, Bundle bundle) {
-
-                Log.d("Debug", "onStatusChanged");
-            }
-
-            @Override
-            public void onProviderEnabled(String s) {
-                Log.d("Debug", "onProviderEnabled");
-            }
-
-            @Override
-            public void onProviderDisabled(String s) {
-                Log.d("Debug", "onProviderDisabled");
-            }
-        };
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+//        GPSPermission();
 
         socketApp = (SocketApp) getApplication();
 
@@ -148,8 +107,14 @@ public class MainActivity extends AppCompatActivity {
 
         mSocket.on("join", joinData);
         mSocket.on("exit", exitRoom);
-}
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        mSocket.emit("disconnect");
+    }
 
     private Emitter.Listener joinData = new Emitter.Listener() {
         @Override
@@ -182,6 +147,9 @@ public class MainActivity extends AppCompatActivity {
     private View.OnClickListener clickFind = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
+            gps.getLocation();
+            lat = gps.getLat();
+            lng = gps.getLng();
             length = 100;
 
             try {
@@ -273,48 +241,95 @@ public class MainActivity extends AppCompatActivity {
             dialogFailureActivity.dismiss();
         }
     };
-
-    private boolean hasPermissions() {
-        int res = 0;
-
-        String[] permissions = new String[]{Manifest.permission.ACCESS_FINE_LOCATION};
-
-        for (String perms: permissions){
-            res = checkCallingOrSelfPermission(perms);
-
-            if(!(res == PackageManager.PERMISSION_GRANTED))
-                return false;
-        }
-        return true;
-    }
-
-    private void requestPerms() {
-        String[] permissions = new String[]{Manifest.permission.ACCESS_FINE_LOCATION};
-
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions(permissions, 0);
-        }
-    }
-
+//
+//    private boolean hasPermissions() {
+//        int res = 0;
+//
+//        String[] permissions = new String[]{Manifest.permission.ACCESS_FINE_LOCATION};
+//
+//        for (String perms: permissions){
+//            res = checkCallingOrSelfPermission(perms);
+//
+//            if(!(res == PackageManager.PERMISSION_GRANTED))
+//                return false;
+//        }
+//        return true;
+//    }
+//
+//    private void requestPerms() {
+//        String[] permissions = new String[]{Manifest.permission.ACCESS_FINE_LOCATION};
+//
+//        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            requestPermissions(permissions, 0);
+//        }
+//    }
+//
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        boolean allowed = true;
-
-        switch (requestCode) {
-            case 0:
-                for (int res: grantResults) {
-                    allowed = allowed && (res == PackageManager.PERMISSION_GRANTED);
-                }
-                break;
-
-            default:
-                allowed = false;
-                break;
+        if(requestCode == PERMISSIONS_ACCESS_FINE_LOCATION && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            isAccessFineLocation = true;
+        } else if( requestCode == PERMISSIONS_ACCESS_COARSE_LOCATION && grantResults[0] == PackageManager.PERMISSION_GRANTED ) {
+            isAccessCoarseLocation = true;
         }
-        if(!allowed) {
-            Toast.makeText(getApplicationContext(), "권한이 거부되었습니다.", Toast.LENGTH_LONG).show();
+
+        if(isAccessFineLocation && isAccessCoarseLocation) {
+            isPermission = true;
         }
     }
+    private void callPermission() {
+        // Check the SDK version and whether the permission is already granted or not.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            requestPermissions(
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSIONS_ACCESS_FINE_LOCATION);
+
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED){
+
+            requestPermissions(
+                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                    PERMISSIONS_ACCESS_COARSE_LOCATION);
+        } else {
+            isPermission = true;
+        }
+    }
+
+
+//
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        if(resultCode == Activity.RESULT_OK && requestCode == 1) {
+//            if(EasyPermissions.hasPermissions(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+//
+//            }
+//        } else {
+//            EasyPermissions.onRequestPermissionsResult(this, getString(R.string.needToPermissions), );
+//        }
+//    }
+
+    //    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        boolean allowed = true;
+//
+//        switch (requestCode) {
+//            case 0:
+//                for (int res: grantResults) {
+//                    allowed = allowed && (res == PackageManager.PERMISSION_GRANTED);
+//                }
+//                break;
+//
+//            default:
+//                allowed = false;
+//                break;
+//        }
+//        if(!allowed) {
+//            Toast.makeText(getApplicationContext(), "권한이 거부되었습니다.", Toast.LENGTH_LONG).show();
+//        }
+//    }
 
     private JSONObject setGPSData(double lat, double lng, int length) throws JSONException {
         JSONObject GPSData = new JSONObject();
@@ -337,4 +352,16 @@ public class MainActivity extends AppCompatActivity {
             });
         };
     };
+
+//    public void GPSPermission() {
+//        if (getApplicationContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS)) {
+//            if (hasPermissions()) {
+////                Toast.makeText(getApplicationContext(), "이미 허용함.", Toast.LENGTH_LONG).show();
+//            } else {
+//                requestPerms();
+//            }
+//        } else {
+////            Toast.makeText(getApplicationContext(), "이용할 수 없음.", Toast.LENGTH_LONG).show();
+//        }
+//    }
 }

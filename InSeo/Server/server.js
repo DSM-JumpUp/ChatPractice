@@ -1,8 +1,8 @@
 const app = require('express')();
 const SocketIo = require('socket.io');
 
-const server = app.listen(8080, () => {
-    console.log('running...');
+const server = app.listen(process.env.PORT, () => {
+    console.log(process.env.PORT + '  running...');
 });
 const io = SocketIo(server);
 
@@ -15,10 +15,11 @@ let report = {};
 let randomKeyword = ['익명의 너구리', '익명의 산 개미', '익명의 똥구멍', '익명의 며느리', '익명의 개구리', '익명의 손승용', '익명의 귀요미', '익명의 마마무', '익명의 아몬드', '익명의 다람쥐', '익명의 독수리', '익명의 대머리', '익명의 물고기', '익명의 파랑새', '익명의 호랑이', '익명의 정다은', '익명의 까마귀', '익명의 거북이', '익명의 코뿔소', '익명의 도도새', '익명의 두더지', '익명의 스컹크', '익명의 족제비', '익명의 돌고래', '익명의 오소리', '익명의 원숭이', '익명의 미어캣', '익명의 북극곰', '익명의 흰고래', '익명의 범고래', '익명의 청새치', '익명의 햄스터', '익명의 친칠리', '익명의 산토끼', '익명의 코알라', '익명의 캥거루', '익명의 두꺼비', '익명의 도룡뇽', '익명의 앵무새', '익명의 물총새', '익명의 왜가리', '익명의 독수리', '익명의 호박벌', '익명의 물장군', '익명의 풍뎅이', '익명의 사마귀', '익명의 잠자리', '익명의 왕개미', '익명의 왕거미', '익명의 도마뱀', '익명의 코브라', '익명의 카이만', '익명의 방울뱀', '익명의 보아뱀', '익명의 구렁이', '익명의 고등어', '익명의 주꾸미', '익명의 돌문어']
 
 let controlRoom = (socket) => {
+
     if(queue.length > 0) {
         for(let i = 0; i < queue.length; i++ ) {
             let peerId = queue[i].id;
-            if(calculateDistance(locations[peerId].lat, locations[peerId].lng, locations[socket.id].lat, locations[socket.id].lng) <= (locations[socket.id].length / 1000)){
+            if(calculateDistance(locations[peerId].lat, locations[peerId].lng, locations[socket.id].lat, locations[socket.id].lng) <= (locations[socket.id].length / 1000) && socket.id !== queue[i].id){
                 let peer = queue[i];
                 queue = queue.splice(i, 1);
 
@@ -35,7 +36,7 @@ let controlRoom = (socket) => {
 
                 break;
             }
-            if(i === queue.length - 1) queue.push(socket);
+            else if(socket.id === queue[i].id) queue = queue.splice(i, 1);
             else if(i === queue.length - 1) queue.push(socket);
             else continue;
         }
@@ -51,9 +52,6 @@ io.on("connection", socket => {
         names[socket.id] = randomKeyword[Math.floor(Math.random() * (randomKeyword.length + 1))]
         allUsers[socket.id] = socket;
         locations[socket.id] = data
-        console.log("lat : " + data.lat)
-        console.log("lng : " + data.lng)
-        console.log("length : " + data.length)
         controlRoom(socket)
     })
     socket.on("pop queue", function() {
