@@ -148,8 +148,12 @@ public class ChatActivity extends AppCompatActivity {
     private View.OnClickListener reportClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            //todo EditText에 있는 데이터 Server로 전송
-            socket.emit("report");
+            try {
+                data.put("report",ChatReportDialog.chatReportEdit.getText().toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            socket.emit("report", data);
             Toast.makeText(getApplicationContext(),"신고가 완료되었습니다.",Toast.LENGTH_SHORT).show();
             chatReportDialog.dismiss();
         }
