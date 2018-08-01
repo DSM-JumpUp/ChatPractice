@@ -42,24 +42,16 @@ public class ConnectActivity extends AppCompatActivity implements EasyPermission
         gpsInfo = new GPSInfo(ConnectActivity.this);
 
         Button btn = findViewById(R.id.btn_connect_start);
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                tryMatching();
-            }
-        });
+        btn.setOnClickListener(tryMatching);
 
         mSocket = SocketApplication.getSocket();
         mSocket.on("chat start", onChatStart);
     }
 
-    private String getUsername() {
-        Resources res = getResources();
-        String[] names = res.getStringArray(R.array.names_array);
-        Random rnd = new Random();
-        rnd.nextInt();
-        return names[rnd.nextInt(names.length - 1)];
-    }
+    private View.OnClickListener tryMatching = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) { tryMatching(); }
+    };
 
     private void tryMatching() {
         if(gpsInfo.getLocation() != null){
@@ -75,11 +67,12 @@ public class ConnectActivity extends AppCompatActivity implements EasyPermission
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mSocket.off("chat start", onChatStart);
-        gpsInfo.stopUsingGPS();
+    private String getUsername() {
+        Resources res = getResources();
+        String[] names = res.getStringArray(R.array.names_array);
+        Random rnd = new Random();
+        rnd.nextInt();
+        return names[rnd.nextInt(names.length - 1)];
     }
 
     private Emitter.Listener onChatStart = new Emitter.Listener() {
@@ -97,7 +90,9 @@ public class ConnectActivity extends AppCompatActivity implements EasyPermission
     };
 
     void PermissionCheck(){
-        if(!EasyPermissions.hasPermissions(this, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.RECORD_AUDIO, Manifest.permission.ACCESS_COARSE_LOCATION)){
+        if(!EasyPermissions.hasPermissions(this, Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.RECORD_AUDIO,
+                Manifest.permission.ACCESS_COARSE_LOCATION)){
             EasyPermissions.requestPermissions(this, "앱에 필요한 권한을 부여해야 합니다!",
                     0, Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.RECORD_AUDIO,
@@ -106,7 +101,7 @@ public class ConnectActivity extends AppCompatActivity implements EasyPermission
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
     }
@@ -119,6 +114,13 @@ public class ConnectActivity extends AppCompatActivity implements EasyPermission
         if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
             new AppSettingsDialog.Builder(this).build().show();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mSocket.off("chat start", onChatStart);
+        gpsInfo.stopUsingGPS();
     }
 
     private long backPressedTime = 0;

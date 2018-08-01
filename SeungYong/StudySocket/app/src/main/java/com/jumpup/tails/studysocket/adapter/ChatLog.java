@@ -1,5 +1,6 @@
 package com.jumpup.tails.studysocket.adapter;
 
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -17,12 +18,9 @@ import static com.jumpup.tails.studysocket.model.Message.TYPE_LOG;
 import static com.jumpup.tails.studysocket.model.Message.TYPE_MESSAGE;
 
 public class ChatLog extends RecyclerView.Adapter<ChatLog.ViewHolder> {
-
     private ArrayList<Message> mMessageList;
 
-    public ChatLog(ArrayList<Message> mMessageList){
-        this.mMessageList = mMessageList;
-    }
+    public ChatLog(ArrayList<Message> mMessageList){ this.mMessageList = mMessageList; }
 
     @NonNull
     @Override
@@ -44,23 +42,19 @@ public class ChatLog extends RecyclerView.Adapter<ChatLog.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
         Message message = mMessageList.get(position);
         holder.tvMessage.setText(message.getMessage());
         holder.tvTime.setText(message.getTime());
     }
 
     @Override
-    public int getItemCount() {
-        return mMessageList.size();
-    }
+    public int getItemCount() { return mMessageList.size(); }
 
     @Override
-    public int getItemViewType(int position) {
-        return mMessageList.get(position).getType();
-    }
+    public int getItemViewType(int position) { return mMessageList.get(position).getType(); }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    class ViewHolder extends RecyclerView.ViewHolder{
         TextView tvMessage;
         TextView tvTime;
 

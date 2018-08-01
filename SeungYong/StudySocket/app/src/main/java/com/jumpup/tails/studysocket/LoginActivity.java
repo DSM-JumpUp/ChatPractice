@@ -1,7 +1,6 @@
 package com.jumpup.tails.studysocket;
 
 import android.content.Intent;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -27,23 +26,19 @@ public class LoginActivity extends AppCompatActivity {
     private AppCompatEditText editText;
     private Socket mSocket;
     private String mUsername;
-    private LoginWaitDialog dialogFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        editText = findViewById(R.id.appCompatEditText);
-        AppCompatButton btn = findViewById(R.id.appCompatButton);
         mSocket = SocketApplication.getSocket();
 
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                tryLogin();
-            }
-        });
+        editText = findViewById(R.id.appCompatEditText);
+
+        AppCompatButton btn = findViewById(R.id.appCompatButton);
+        btn.setOnClickListener(tryLogin);
+
         mSocket.on("login", onLogin);
     }
 
@@ -61,7 +56,7 @@ public class LoginActivity extends AppCompatActivity {
         mSocket.emit("add user", username);
 
         FragmentManager fm = getSupportFragmentManager();
-        dialogFragment = new LoginWaitDialog();
+        LoginWaitDialog dialogFragment = new LoginWaitDialog();
         dialogFragment.show(fm, "wait_fragment_dialog");
     }
 
@@ -70,6 +65,11 @@ public class LoginActivity extends AppCompatActivity {
         super.onDestroy();
         mSocket.off("login", onLogin);
     }
+
+    private View.OnClickListener tryLogin = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) { tryLogin(); }
+    };
 
     private Emitter.Listener onLogin = new Emitter.Listener() {
         @Override
@@ -83,9 +83,7 @@ public class LoginActivity extends AppCompatActivity {
             }
             runOnUiThread(new Runnable() {
                 @Override
-                public void run() {
-                    Toast.makeText(getApplication(),"로그인 성공!  유저번호 : " + UserNum + " 유저이름 : " + mUsername, Toast.LENGTH_SHORT).show();
-                }
+                public void run() { Toast.makeText(getApplication(),"로그인 성공!  유저번호 : " + UserNum + " 유저이름 : " + mUsername, Toast.LENGTH_SHORT).show(); }
             });
             Intent sendIntent = new Intent(getApplicationContext(), MainActivity.class);
             sendIntent.putExtra("userName", mUsername);

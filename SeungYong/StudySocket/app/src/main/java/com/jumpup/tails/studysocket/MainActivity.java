@@ -31,7 +31,6 @@ import static com.jumpup.tails.studysocket.socket.SocketApplication.LOGIN_TRY;
 public class MainActivity extends AppCompatActivity {
     private Socket mSocket;
 
-    private boolean misSending = false;
     private boolean misPlus = false;
 
     private ArrayList<Message> mMessages;
@@ -66,14 +65,9 @@ public class MainActivity extends AppCompatActivity {
         mSocket = SocketApplication.getSocket();
         mSocket.connect();
         mSocket.on("message", NewMessage);
-        //startLogin();
+
         startConnect();
     }
-
-/*    void startLogin(){
-        Intent i = new Intent(MainActivity.this, LoginActivity.class);
-        startActivityForResult(i,LOGIN_TRY);
-    }*/
 
     void startConnect(){
         Intent i = new Intent(MainActivity.this, ConnectActivity.class);
@@ -103,16 +97,11 @@ public class MainActivity extends AppCompatActivity {
     private View.OnClickListener sendChat = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            mTypeText.setError(null);
-
             String chatData = mTypeText.getText().toString().trim();
-            if (TextUtils.isEmpty(chatData)) {
-                return;
-            }else {
+            if (!TextUtils.isEmpty(chatData)) {
+                mSocket.emit("message", chatData);
                 mTypeText.getText().clear();
             }
-            misSending  = true;
-            mSocket.emit("message", chatData);
         }
     };
 
@@ -134,20 +123,30 @@ public class MainActivity extends AppCompatActivity {
         public void call(Object... args) {
             JSONObject data = (JSONObject) args[0];
             final String chatData;
+            final String id;
 
-            try { chatData = data.getString("message");
+            try {
+                chatData = data.getString("message");
+                id = data.getString("id");
             } catch (JSONException e) { return; }
 
-            if(misSending){
-                mMessages.add(new Message.Builder().Build(Message.TYPE_MESSAGE, chatData));
-                misSending = false;
-            }else{
-                mMessages.add(new Message.Builder().Build(Message.TYPE_LOG, chatData));
-            }
-            mChatLog.notifyItemInserted(mMessages.size() - 1);
+            if(mSocket.id().equals(id)) mMessages.add(new Message.Builder().Build(Message.TYPE_MESSAGE, chatData));
+            else mMessages.add(new Message.Builder().Build(Message.TYPE_LOG, chatData));
+
+            addMessageLog();
             scrollBottom();
         }
     };
+
+    void addMessageLog(){
+        mRecyclerView.post(new Runnable() {
+            @Override
+            public void run() {
+                mChatLog.notifyItemInserted(mMessages.size() - 1);
+                mChatLog.notifyDataSetChanged();
+            }
+        });
+    }
 
     void scrollBottom(){
         runOnUiThread(new Runnable() {
@@ -159,7 +158,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //mSocket.off("login", onLogin);
         mSocket.off("message", NewMessage);
         mSocket.disconnect();
     }
