@@ -14,14 +14,13 @@ public class SocketApplication extends Application{
     private static Socket mSocket;
     {
         try {
-            mSocket = IO.socket("http://10.0.2.2:3000/");
-            //mSocket = IO.socket("http://192.168.42.244:3000/");
+            //mSocket = IO.socket("http://10.0.2.2:3000/");
+            //mSocket = IO.socket("http://192.168.42.45:3000/");
+            mSocket = IO.socket("https://socket-chatting.herokuapp.com/");
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
     }
 
-    public static Socket getSocket() {
-        return mSocket;
-    }
+    public static Socket getSocket() { return mSocket; }
 }

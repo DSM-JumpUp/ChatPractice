@@ -1,9 +1,11 @@
 const app = require('express')();
 const SocketIo = require('socket.io');
 
-const server = app.listen(3000, () => {
-    console.log('running...');
-});
+const server =
+    app.get('/', (req, res) => res.status(200).end('<h1>socket-chatting</h1>'))
+    .listen(process.env.PORT, () => {
+        console.log('running...');
+    });
 const io = SocketIo(server);
 
 var queue = [];    // list of sockets waiting for peers

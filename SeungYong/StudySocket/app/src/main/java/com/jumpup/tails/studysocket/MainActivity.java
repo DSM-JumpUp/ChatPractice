@@ -2,14 +2,11 @@ package com.jumpup.tails.studysocket;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.design.widget.BottomSheetBehavior;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -129,7 +126,6 @@ public class MainActivity extends AppCompatActivity {
                 misPlus = false;
                 chooseMode.setVisibility(View.GONE);
             }
-
         }
     };
 
