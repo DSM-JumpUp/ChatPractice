@@ -10,8 +10,6 @@ import android.widget.TextView;
 import com.jumpup.tails.studysocket.R;
 import com.jumpup.tails.studysocket.model.Message;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 
 import static com.jumpup.tails.studysocket.model.Message.TYPE_ACTION;

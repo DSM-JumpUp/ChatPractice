@@ -11,7 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-import com.jumpup.tails.GPS.GPSInfo;
+import com.jumpup.tails.studysocket.gps.GPSInfo;
 import com.jumpup.tails.studysocket.dialog.LoginWaitDialog;
 import com.jumpup.tails.studysocket.socket.SocketApplication;
 
