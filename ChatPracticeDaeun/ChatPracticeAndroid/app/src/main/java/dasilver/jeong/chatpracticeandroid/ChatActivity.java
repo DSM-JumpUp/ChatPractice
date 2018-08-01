@@ -1,6 +1,7 @@
 package dasilver.jeong.chatpracticeandroid;
 
 import android.content.Intent;
+import android.media.Image;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,10 +9,13 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.text.SimpleDateFormat;
@@ -34,11 +38,12 @@ public class ChatActivity extends AppCompatActivity {
     private Date nowDate;
     private SimpleDateFormat timeDateFormat;
     private String timeText, nickName;
-    private ImageButton sendMessageButton, plusButton, cancelButton, leaveButton;
+    private ImageButton sendMessageButton, plusButton, cancelButton, leaveButton, reportButton;
     private EditText messageEditText;
     private TextView nickNameText;
     private JSONObject data;
     private ConstraintLayout bottomBtnLayout;
+    private ChatReportDialog chatReportDialog;
 
 
     @Override
@@ -54,6 +59,7 @@ public class ChatActivity extends AppCompatActivity {
         cancelButton = (ImageButton)findViewById(R.id.btn_chat_cancel); //추가 버튼들을 숨기는 버튼
         bottomBtnLayout = (ConstraintLayout)findViewById(R.id.layout_bottom_btn); //추가 버튼들이 있는 숨겨진 레이아웃
         leaveButton = (ImageButton)findViewById(R.id.btn_chat_leave); //채팅 방 나가기 버튼
+        reportButton = (ImageButton)findViewById(R.id.btn_chat_report);
         data = new JSONObject();
         chatRecycler = (RecyclerView) findViewById(R.id.recycler_chat);
         chatLayoutManager = new LinearLayoutManager(this);
@@ -128,7 +134,37 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
+        reportButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                chatReportDialog = new ChatReportDialog(ChatActivity.this, reportClickListener, cancelClickListener);
+                chatReportDialog.setCancelable(true);
+                chatReportDialog.getWindow().setGravity(Gravity.CENTER);
+                chatReportDialog.show();
+            }
+        });
     }
+
+    private View.OnClickListener reportClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            try {
+                data.put("report",ChatReportDialog.chatReportEdit.getText().toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            socket.emit("report", data);
+            Toast.makeText(getApplicationContext(),"신고가 완료되었습니다.",Toast.LENGTH_SHORT).show();
+            chatReportDialog.dismiss();
+        }
+    };
+
+    private View.OnClickListener cancelClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            chatReportDialog.dismiss();
+        }
+    };
 
     //Server로 부터 recieve message를 받았을 경우 실행할 메서드
     private Emitter.Listener receiveMassage = new Emitter.Listener() {

@@ -2,4 +2,5 @@
     <string name="app_name">안드로이드</string>
     <string name="title_activity_main2">메인</string>
     <string name="peerExitRoom">상대방이 대화방을 떠났습니다.</string>
+    <string name="needToPermissions">이 앱은 당신의 주변에 사람들을 찾아야하므로 위치정보 제공 동의가 필요합니다.</string>
 </resources>
