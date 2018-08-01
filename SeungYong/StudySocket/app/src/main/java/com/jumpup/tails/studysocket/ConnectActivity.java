@@ -4,12 +4,14 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.jumpup.tails.studysocket.gps.GPSInfo;
 import com.jumpup.tails.studysocket.dialog.LoginWaitDialog;
@@ -74,13 +76,6 @@ public class ConnectActivity extends AppCompatActivity implements EasyPermission
     }
 
     @Override
-    protected void onRestart() {
-        super.onRestart();
-        gpsInfo.stopUsingGPS();
-        mSocket.off("chat start", onChatStart);
-    }
-
-    @Override
     protected void onDestroy() {
         super.onDestroy();
         mSocket.off("chat start", onChatStart);
@@ -123,6 +118,22 @@ public class ConnectActivity extends AppCompatActivity implements EasyPermission
     public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
         if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
             new AppSettingsDialog.Builder(this).build().show();
+        }
+    }
+
+    private long backPressedTime = 0;
+    @Override
+    public void onBackPressed(){
+        long tempTime = System.currentTimeMillis();
+        long intervalTime = tempTime - backPressedTime;
+
+        long FINISH_INTERVAL_TIME = 2000;
+        if (0 <= intervalTime && FINISH_INTERVAL_TIME >= intervalTime) {
+            super.onBackPressed();
+            ActivityCompat.finishAffinity(this);
+        } else {
+            backPressedTime = tempTime;
+            Toast.makeText(this, "뒤로 버튼을 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show();
         }
     }
 }

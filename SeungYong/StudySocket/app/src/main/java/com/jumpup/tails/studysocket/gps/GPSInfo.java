@@ -133,7 +133,7 @@ public class GPSInfo extends Service implements LocationListener {
     private void makeDialog() {
         AlertDialog.Builder alt_bld = new AlertDialog.Builder(mContext);
 
-        alt_bld.setMessage("GPS 사용이 필요합니다. \n설정창으로 가시겠습니까?").setCancelable(
+        alt_bld.setMessage("GPS 사용이 필요합니다.\n설정창으로 가시겠습니까?").setCancelable(
                 false).setPositiveButton("OK",
                 new DialogInterface.OnClickListener() {
                     @Override

@@ -126,7 +126,6 @@ public class MainActivity extends AppCompatActivity {
                 misPlus = false;
                 chooseMode.setVisibility(View.GONE);
             }
-
         }
     };
 

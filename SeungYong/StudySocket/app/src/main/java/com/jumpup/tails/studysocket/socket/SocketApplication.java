@@ -22,7 +22,5 @@ public class SocketApplication extends Application{
         }
     }
 
-    public static Socket getSocket() {
-        return mSocket;
-    }
+    public static Socket getSocket() { return mSocket; }
 }
