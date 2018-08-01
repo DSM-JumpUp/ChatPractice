@@ -8,9 +8,9 @@ const server =
     });
 const io = SocketIo(server);
 
-var queue = []; // list of sockets waiting for peers
-var rooms = {}; // map socket.id => room
-var allUsers = {}; // map socket.id => socket
+var queue = [];
+var rooms = [];
+var allUsers = {};
 
 var locationLat = [];
 var locationLng = [];
@@ -35,13 +35,13 @@ var findPeerForLoneSocket = function (socket) {
                 locationLng.splice(locationLng.indexOf(socket.id), 1);
                 var room = socket.id + '#' + queue[peer].id;
                 console.log(room);
-                // join them both
+
                 queue[peer].join(room);
                 socket.join(room);
-                // register rooms to their names
+
                 rooms[queue[peer].id] = room;
                 rooms[socket.id] = room;
-                // exchange names between the two of them and start the chat
+
                 queue[peer].emit('chat start', {
                     'room': room
                 });
@@ -57,7 +57,6 @@ var findPeerForLoneSocket = function (socket) {
             else isDistatnce.splice(queue.indexOf(socket.id), 1);
         }
     } else {
-        // queue is empty, add our lone socket
         console.log('push queue');
         queue.push(socket);
     }
@@ -70,13 +69,13 @@ io.on('connection', function (socket) {
         locationLat[socket.id] = lat;
         locationLng[socket.id] = lng;
         console.log(lat + ' ' + lng);
-        // now check if sb is in queue
+
         findPeerForLoneSocket(socket);
     });
     socket.on('message', function (data) {
         var room = rooms[socket.id];
         console.log(room, data);
-        //socket.broadcast.to(room).emit('message', {'message': data});
+
         socket.to(room).emit('message', {
             'message': data,
             'id': socket.id
@@ -86,24 +85,9 @@ io.on('connection', function (socket) {
             'id': socket.id
         });
     });
-    socket.on('leave room', function () {
-        var room = rooms[socket.id];
-        socket.broadcast.to(room).emit('chat end');
-        var peerID = room.split('#');
-        peerID = peerID[0] === socket.id ? peerID[1] : peerID[0];
-        // add both current and peer to the queue
-        findPeerForLoneSocket(allUsers[peerID]);
-        findPeerForLoneSocket(socket);
-    });
-    /*
-    socket.on('disconnect', function () {
-        var room = rooms[socket.id];
-        //socket.broadcast.to(room).emit('chat end');
-        peerID = peerID[0] === socket.id ? peerID[1] : peerID[0];
-        queue.splice(queue.indexOf(peer.id), 1);
-        queue.splice(queue.indexOf(socket.id), 1);
-    });
-    */
    socket.on('disconnect', function () {
+       var room = rooms[socket.id];
+       socket.to(room).emit('chat end');
+       //rooms.splice(rooms.indexOf(socket.id), 1); 
    });
 });

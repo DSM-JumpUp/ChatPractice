@@ -2,6 +2,7 @@ package com.jumpup.tails.studysocket;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.jumpup.tails.studysocket.adapter.ChatLog;
 import com.jumpup.tails.studysocket.model.Message;
@@ -33,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean misPlus = false;
 
-    private ArrayList<Message> mMessages;
+    private ArrayList<Message> mMessages = new ArrayList<>();
     private ChatLog mChatLog;
     private RecyclerView mRecyclerView;
 
@@ -50,10 +52,10 @@ public class MainActivity extends AppCompatActivity {
 
         mUserNameTextView = findViewById(R.id.user_name);
 
-        mMessages = new ArrayList<>();
         mRecyclerView = findViewById(R.id.recycler_chat);
 
         mTypeText = findViewById(R.id.type_chat_edit_text);
+
         Button mSendBtn = findViewById(R.id.send_btn);
         mSendBtn.setOnClickListener(sendChat);
 
@@ -65,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
         mSocket = SocketApplication.getSocket();
         mSocket.connect();
         mSocket.on("message", NewMessage);
+        mSocket.on("chat end", ChatEnd);
 
         startConnect();
     }
@@ -118,6 +121,20 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    void addMessageLog(){
+        mRecyclerView.post(new Runnable() {
+            @Override
+            public void run() { mChatLog.notifyItemInserted(mMessages.size() - 1); }
+        });
+    }
+
+    void scrollBottom(){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() { mRecyclerView.scrollToPosition(mChatLog.getItemCount() - 1); }
+        });
+    }
+
     private Emitter.Listener NewMessage = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
@@ -138,27 +155,38 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    void addMessageLog(){
-        mRecyclerView.post(new Runnable() {
-            @Override
-            public void run() {
-                mChatLog.notifyItemInserted(mMessages.size() - 1);
-                mChatLog.notifyDataSetChanged();
-            }
-        });
-    }
+    private Emitter.Listener ChatEnd = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() { Toast.makeText(getApplicationContext(), "상대방을 채팅을 종료했습니다. 첫 시작화면으로 돌아갑니다.", Toast.LENGTH_SHORT).show(); }
+            });
 
-    void scrollBottom(){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() { mRecyclerView.scrollToPosition(mChatLog.getItemCount() - 1); }
-        });
-    }
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+        }
+    };
 
+    private long backPressedTime = 0;
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mSocket.off("message", NewMessage);
-        mSocket.disconnect();
+    public void onBackPressed(){
+        long tempTime = System.currentTimeMillis();
+        long intervalTime = tempTime - backPressedTime;
+
+        long FINISH_INTERVAL_TIME = 2000;
+        if (0 <= intervalTime && FINISH_INTERVAL_TIME >= intervalTime) {
+            super.onBackPressed();
+            mSocket.off("message", NewMessage);
+            mSocket.off("chat end", ChatEnd);
+            mSocket.disconnect();
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+        } else {
+            backPressedTime = tempTime;
+            Toast.makeText(this, "뒤로 버튼을 더 누르면 채팅이 종료됩니다.", Toast.LENGTH_SHORT).show();
+        }
     }
 }
