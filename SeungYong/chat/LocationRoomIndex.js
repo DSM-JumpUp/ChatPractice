@@ -78,10 +78,12 @@ io.on('connection', function (socket) {
         console.log(room, data);
         //socket.broadcast.to(room).emit('message', {'message': data});
         socket.to(room).emit('message', {
-            'message': data
+            'message': data,
+            'id': socket.id
         });
         socket.emit('message', {
-            'message': data
+            'message': data,
+            'id': socket.id
         });
     });
     socket.on('leave room', function () {
@@ -102,5 +104,6 @@ io.on('connection', function (socket) {
         queue.splice(queue.indexOf(socket.id), 1);
     });
     */
-   socket.on('disconnect', function () {});
+   socket.on('disconnect', function () {
+   });
 });
