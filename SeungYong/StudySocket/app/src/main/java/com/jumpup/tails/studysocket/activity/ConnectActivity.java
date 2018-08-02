@@ -134,7 +134,6 @@ public class ConnectActivity extends AppCompatActivity implements EasyPermission
         if (0 <= intervalTime && FINISH_INTERVAL_TIME >= intervalTime) {
             super.onBackPressed();
             mSocket.off("chat start", onChatStart);
-            mSocket.disconnect();
             gpsInfo.stopUsingGPS();
             ActivityCompat.finishAffinity(this);
         } else {

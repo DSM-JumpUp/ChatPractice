@@ -162,7 +162,6 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void run() { Toast.makeText(getApplicationContext(), "상대방을 채팅을 종료했습니다. 첫 시작화면으로 돌아갑니다.", Toast.LENGTH_SHORT).show(); }
             });
-
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
