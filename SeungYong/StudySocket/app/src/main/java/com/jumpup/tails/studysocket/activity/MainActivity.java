@@ -66,8 +66,6 @@ public class MainActivity extends AppCompatActivity {
 
         mSocket = SocketApplication.getSocket();
         mSocket.connect();
-        mSocket.on("message", NewMessage);
-        mSocket.on("chat end", ChatEnd);
 
         startConnect();
     }
@@ -91,6 +89,9 @@ public class MainActivity extends AppCompatActivity {
                 LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
                 mRecyclerView.setLayoutManager(mLayoutManager);
                 mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+
+                mSocket.on("message", NewMessage);
+                mSocket.on("chat end", ChatEnd);
             }else{
                 Log.d("Intent", "NOOOO");
             }
@@ -155,13 +156,18 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private Emitter.Listener ChatEnd = new Emitter.Listener() {
+    public Emitter.Listener ChatEnd = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() { Toast.makeText(getApplicationContext(), "상대방을 채팅을 종료했습니다. 첫 시작화면으로 돌아갑니다.", Toast.LENGTH_SHORT).show(); }
             });
+
+            mSocket.off("message", NewMessage);
+            mSocket.off("chat end", ChatEnd);
+            mSocket.disconnect();
+
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
@@ -177,9 +183,11 @@ public class MainActivity extends AppCompatActivity {
         long FINISH_INTERVAL_TIME = 2000;
         if (0 <= intervalTime && FINISH_INTERVAL_TIME >= intervalTime) {
             super.onBackPressed();
+
             mSocket.off("message", NewMessage);
             mSocket.off("chat end", ChatEnd);
             mSocket.disconnect();
+
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
