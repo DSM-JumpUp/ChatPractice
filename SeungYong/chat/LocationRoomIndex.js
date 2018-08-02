@@ -86,8 +86,10 @@ io.on('connection', function (socket) {
         });
     });
    socket.on('disconnect', function () {
+       console.log('disconnect Event');
        var room = rooms[socket.id];
+       queue.splice(queue.indexOf(socket.id), 1);
        socket.to(room).emit('chat end');
-       //rooms.splice(rooms.indexOf(socket.id), 1); 
+       rooms.splice(rooms.indexOf(socket.id), 1); 
    });
 });
